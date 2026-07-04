@@ -11,17 +11,16 @@ A full-stack **Node.js + Puppeteer** web scraper that allows users to compare pr
 
 ## How to Install
 
-1. Fork the repository on GitHub.
-2. Clone your fork:
-   ```
-   git clone https://github.com/YOUR_USERNAME/scraper.git
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/adiab-dev/scraper.git
    cd scraper
    ```
-3. Install dependencies:
+2. Install dependencies:
    ```
    npm install
    ```
-4. Install the required Chrome browser for Puppeteer:
+3. Install the required Chrome browser for Puppeteer:
    ```
    npx puppeteer browsers install chrome
    ```
@@ -33,15 +32,15 @@ npm start
 ```
 
 The server starts at `http://localhost:3000`. Send a POST request to `/scrape` with a JSON body:
-
+Example request:
 ```json
 {
   "searchQuery": "laptop"
 }
 ```
-or use the already existing UI at `http://localhost:3000`
+or use the already existing Web UI at `http://localhost:3000`
 
 ## Challenges Overcome
-- Handling different website structures
+- Handling inconsistent HTML structures and selectors across different websites
 - Managing asynchronous scraping across multiple sites
-- Ensuring reliable data extraction despite dynamic content loading
+- Ensuring reliable data extraction and error handling
