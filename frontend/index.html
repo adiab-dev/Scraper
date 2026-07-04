@@ -1,0 +1,55 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraper</title>
+</head>
+
+<body>
+    <h1>Scrape for product</h1>
+    <input type="text" id="searchQuery" placeholder="Enter search query">
+    <button onclick="searchProduct()">Search</button>
+    <div id="status">Status: Waiting for input...</div>
+    <ul id="results"></ul>
+    <script>
+        async function searchProduct() {
+            const statusBox = document.getElementById("status");
+            const resultsList = document.getElementById("results");
+            const query = document.getElementById("searchQuery").value;
+
+            if (!query) {
+                statusBox.textContent = "Status: Please enter a product name!";
+                return;
+            }
+
+            statusBox.textContent = "Status: Sending request to server...";
+
+            try {
+                const response = await fetch('/scrape', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ searchQuery: query }),
+                });
+
+                statusBox.textContent = "Status: Scraping started...";
+                const products = await response.json();
+
+                if (!products.length) {
+                    statusBox.textContent = "Status: No results found.";
+                    resultsList.innerHTML = "<li>No products available</li>";
+                } else {
+                    statusBox.textContent = "Status: Search complete!";
+                    resultsList.innerHTML = products
+                        .map(p => `<li>${p.title} - ${p.price} KD (${p.site})</li>`)
+                        .join('');
+                }
+            } catch (error) {
+                statusBox.textContent = "Status: Error occurred!";
+                console.error("Scraping error:", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
