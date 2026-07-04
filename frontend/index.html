@@ -41,7 +41,9 @@
                 } else {
                     statusBox.textContent = "Status: Search complete!";
                     resultsList.innerHTML = products
-                        .map(p => `<li>${p.title} - ${p.price} KD (${p.site})</li>`)
+                        .map(p => `<li>
+                            <a href="${p.link}" target="_blank" rel="noopener noreferrer">${p.title}</a> - ${p.price} KD (${p.site})
+                        </li>`)
                         .join('');
                 }
             } catch (error) {
