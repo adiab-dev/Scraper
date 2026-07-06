@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scraper</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1>Scrape for product</h1>
-    <input type="text" id="searchQuery" placeholder="Enter search query">
-    <button onclick="searchProduct()">Search</button>
-    <div id="status">Status: Waiting for input...</div>
-    <ul id="results"></ul>
+    <div class="header">
+        <div class="searchBox">   
+            <h1>Scrape for product</h1>
+            <input type="text" id="searchQuery" placeholder="Enter search query">
+            <button onclick="searchProduct()"><img src="assets/search_icon.svg" alt=""></button>
+        </div>
+        <div id="status">Status: Waiting for input...</div>
+    </div>
+    <div class="resultsDiv">
+        <ul id="results"></ul>
+    </div>
     <script>
         async function searchProduct() {
             const statusBox = document.getElementById("status");
