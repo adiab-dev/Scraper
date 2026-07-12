@@ -25,7 +25,7 @@ const sites = [
 
 
     //the element that holds the product URL
-    URLSelector: '', //Empty, Xcite website unavailable at time of writing this code.
+    URLSelector: '.col-span-2.sm\\:col-span-4.sp\\:col-span-3.md\\:col-span-4.lg\\:col-span-3.xl\\:col-span-2.relative.flex.text-center.product a',
 
     //empty, uses puppeteer defaults
     gotoOptions: {},
