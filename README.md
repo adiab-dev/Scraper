@@ -44,3 +44,4 @@ or use the already existing Web UI at `http://localhost:3000`
 - Handling inconsistent HTML structures and selectors across different websites
 - Managing asynchronous scraping across multiple sites
 - Ensuring reliable data extraction and error handling
+- Managing lazy loading elements in some websites to ensure the data is retrieved after elements are loaded

@@ -16,13 +16,13 @@
         </div>
         <div id="status">Status: Waiting for input...</div>
     </div>
-    <div class="resultsDiv">
-        <ul id="results"></ul>
+    <div id="resultsDiv">
+        
     </div>
     <script>
         async function searchProduct() {
             const statusBox = document.getElementById("status");
-            const resultsList = document.getElementById("results");
+            const resultsDiv = document.getElementById("resultsDiv");
             const query = document.getElementById("searchQuery").value;
 
             if (!query) {
@@ -44,13 +44,24 @@
 
                 if (!products.length) {
                     statusBox.textContent = "Status: No results found.";
-                    resultsList.innerHTML = "<li>No products available</li>";
+                    resultsDiv.innerHTML = "<p>No products available</p>";
                 } else {
                     statusBox.textContent = "Status: Search complete!";
-                    resultsList.innerHTML = products
-                        .map(p => `<li>
-                            <a href="${p.link}" target="_blank" rel="noopener noreferrer">${p.title}</a> - ${p.price} KD (${p.site})
-                        </li>`)
+                    resultsDiv.innerHTML = products
+                        .map(productItem => `
+                        <a href="${productItem.link}" target="_blank" rel="noopener noreferrer">
+                            <div class="productHolder">
+                                <div class="productImage"><img src="${productItem.image}" alt="${productItem.title}"></div>
+                                <div class="productInfo">
+                                    <div class="productTitle">${productItem.title}</div>
+                                    <p class="productPrice">Price: ${productItem.price} KD</p>
+                                    <p class="productSite">Site: ${productItem.site}</p>
+                                    <div class="buttonContainer">
+                                        <button class="buyButton">Buy Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>`)
                         .join('');
                 }
             } catch (error) {

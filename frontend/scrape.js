@@ -23,9 +23,11 @@ const sites = [
     //the element that holds the product price
     priceSelector: 'h4 span',
 
-
     //the element that holds the product URL
     URLSelector: '.col-span-2.sm\\:col-span-4.sp\\:col-span-3.md\\:col-span-4.lg\\:col-span-3.xl\\:col-span-2.relative.flex.text-center.product a',
+
+    //the element that holds the product image
+    imageSelector: 'img.mb-4',
 
     //empty, uses puppeteer defaults
     gotoOptions: {},
@@ -48,10 +50,13 @@ const sites = [
     priceSelector: '.cx-product-price',
 
     //the element that holds the product URL
-    URLSelector: '.cx-product-name a',
+    URLSelector: '.cx-product-name',
 
-    //waits until the DOM content is loaded before proceeding, with a timeout of 60 seconds
-    gotoOptions: { waitUntil: 'domcontentloaded', timeout: 60000 },
+    //the element that holds the product image
+    imageSelector: '.cx-product-image img',
+
+    //waits until there are no more than 2 network connections before proceeding, with a timeout of 60 seconds
+    gotoOptions: { waitUntil: 'networkidle2', timeout: 60000 },
   },
   {
     name: 'Eureka',
@@ -72,6 +77,9 @@ const sites = [
 
     //the element that holds the product URL
     URLSelector: '.ais-Hits-item a',
+
+    //the element that holds the product image
+    imageSelector: '.ais-Hits-item img',
 
     //waits until there are no more than 2 network connections before proceeding, with a timeout of 60 seconds, domcontentloaded is not used as this is a single page website with content loaded dynamically
     gotoOptions: { waitUntil: 'networkidle2', timeout: 60000 },
@@ -108,6 +116,32 @@ async function scrapeSite(searchQuery, browser, config) {
     // Wait for the product items to be available
     await page.waitForSelector(config.itemSelector, { timeout: 60000 });
 
+    // Scroll down the page to trigger lazy-loaded images
+    await page.evaluate(async () => {
+      await new Promise((resolve) => {
+        let totalHeight = 0;
+        const distance = 300;
+        const timer = setInterval(() => {
+          window.scrollBy(0, distance);
+          totalHeight += distance;
+          if (totalHeight >= document.body.scrollHeight) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 100);
+      });
+      window.scrollTo(0, 0);
+    });
+    // Wait until at least one image has a real (non-data-URI) src
+    await page.waitForFunction(
+      (selector) => {
+        const imgs = document.querySelectorAll(selector);
+        return [...imgs].some(img => img.src && !img.src.startsWith('data:'));
+      },
+      { timeout: 10000 },
+      config.imageSelector
+    ).catch(() => {});
+
     // Extract product information from the page
     const products = await page.evaluate((config) => {
       const results = [];
@@ -116,6 +150,9 @@ async function scrapeSite(searchQuery, browser, config) {
       items.forEach(item => {
         const title = item.querySelector(config.titleSelector)?.textContent.trim();
         const priceText = item.querySelector(config.priceSelector)?.textContent.trim();
+        const imageEl = item.querySelector(config.imageSelector);
+        const src = imageEl?.src && !imageEl.src.startsWith('data:') ? imageEl.src : null;
+        const image = src || imageEl?.getAttribute('data-src') || imageEl?.getAttribute('srcset')?.split(',')[0]?.trim()?.split(' ')[0];
 
         let link = null;
         if (config.URLSelector) {
@@ -138,7 +175,7 @@ async function scrapeSite(searchQuery, browser, config) {
 
           // Only add the product if the price is a valid number
           if (!isNaN(price)) {
-            results.push({ title, price, site: config.name, link: link});
+            results.push({ title, price, site: config.name, link: link, image});
           }
         }
       });
